@@ -1,4 +1,5 @@
-# Project-Struktur-Data-Kelompok10
+# Project-Struktur-Data-Kelompok7
+
 Duplicate data detection system implemented in C++ using hash tables and large-scale dataset processing.
 
 # Duplicate Data Detection System
@@ -13,6 +14,7 @@ Features:
 
 Dataset:
 Online Retail II Dataset (UCI Machine Learning Repository)
+https://archive.ics.uci.edu/dataset/502/online+retail+ii
 
 Structures used:
 - unordered_map (hash table)
