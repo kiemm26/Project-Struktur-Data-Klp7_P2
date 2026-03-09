@@ -2,6 +2,6 @@ output/
 main
 *.o
 *.exe
-*.dSYM
+main.dSYM/
 .DS_Store
 dataset/dataset.csv
