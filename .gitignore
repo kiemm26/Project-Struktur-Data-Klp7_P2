@@ -1,0 +1,6 @@
+output/
+main
+*.o
+*.exe
+.DS_Store
+dataset/dataset.csv
