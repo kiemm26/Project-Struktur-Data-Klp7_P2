@@ -57,10 +57,10 @@ duplicate-detection/
 ├── linkedList.cpp --- implementasi Linked List\
 ├── fileHandler.h --- deklarasi fungsi pembaca dataset\
 ├── fileHandler.cpp --- membaca dataset CSV
-├── dataset/\
-|     └── dataset.csv --- dataset arsip
-└── output/\
-      └── result.txt --- hasil deteksi duplikasi
+dataset/\
+└── dataset.csv --- dataset arsip
+output/\
+└── result.txt --- hasil deteksi duplikasi
 
 ---
 
