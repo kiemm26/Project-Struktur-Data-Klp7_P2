@@ -25,6 +25,13 @@ int main()
 {
 
       LinkedList list;
+
+      long insertTime = 0;
+      long searchTime = 0;
+      long deleteTime = 0;
+      long showTime = 0;
+      long detectTime = 0;
+
       vector<Data> dataset = readCSV("dataset/dataset.csv");
 
       for (Data d : dataset)
@@ -60,7 +67,13 @@ int main()
                   cout << "Content: ";
                   cin >> d.content;
 
+                  auto start = chrono::high_resolution_clock::now();
+
                   list.insert(d);
+
+                  auto end = chrono::high_resolution_clock::now();
+                  insertTime = chrono::duration_cast<chrono::milliseconds>(end - start).count();
+
                   cout << "Data inserted successfully!" << endl;
             }
             // SEARCH DATA
@@ -81,6 +94,9 @@ int main()
                         string id;
                         cout << "Enter ID: ";
                         cin >> id;
+
+                        auto start = chrono::high_resolution_clock::now();
+
                         Node *result = list.searchByID(id);
 
                         if (result != NULL)
@@ -91,6 +107,9 @@ int main()
                         {
                               cout << "Data not found" << endl;
                         }
+
+                        auto end = chrono::high_resolution_clock::now();
+                        searchTime = chrono::duration_cast<chrono::milliseconds>(end - start).count();
                   }
 
                   else if (option == 2)
@@ -99,6 +118,7 @@ int main()
                         cout << "Enter name: ";
                         cin >> name;
 
+                        auto start = chrono::high_resolution_clock::now();
                         Node *result = list.searchByName(name);
                         if (result != NULL)
                         {
@@ -108,6 +128,9 @@ int main()
                         {
                               cout << "Data not found" << endl;
                         }
+
+                        auto end = chrono::high_resolution_clock::now();
+                        searchTime = chrono::duration_cast<chrono::milliseconds>(end - start).count();
                   }
 
                   else if (option == 3)
@@ -119,6 +142,8 @@ int main()
                         cout << "Enter Name: ";
                         cin >> name;
 
+                        auto start = chrono::high_resolution_clock::now();
+
                         Node *result = list.searchByIDAndName(id, name);
                         if (result != NULL)
                         {
@@ -128,6 +153,9 @@ int main()
                         {
                               cout << "Data not found" << endl;
                         }
+
+                        auto end = chrono::high_resolution_clock::now();
+                        searchTime = chrono::duration_cast<chrono::milliseconds>(end - start).count();
                   }
             }
             // DETECT DUPLICATE
@@ -141,8 +169,10 @@ int main()
                   cout << "2. Based on Metadata (Name + Size)" << endl;
                   cout << "3. Based on Full Data" << endl;
                   cout << "Choose option: ";
-
                   cin >> option;
+
+                  auto start = chrono::high_resolution_clock::now();
+
                   if (option == 1)
                   {
                         list.detectDuplicateByContent();
@@ -156,6 +186,9 @@ int main()
                         list.detectDuplicateByFullData();
                   }
                   cout << "Duplicate detection completed!" << endl;
+
+                  auto end = chrono::high_resolution_clock::now();
+                  detectTime = chrono::duration_cast<chrono::milliseconds>(end - start).count();
             }
             // SHOW DATA
             else if (choice == 4)
@@ -167,6 +200,8 @@ int main()
                   cout << "2. Show Duplicate Data" << endl;
                   cout << "Choose option: ";
 
+                  auto start = chrono::high_resolution_clock::now();
+
                   cin >> option;
                   if (option == 1)
                   {
@@ -176,6 +211,9 @@ int main()
                   {
                         list.printDuplicates();
                   }
+
+                  auto end = chrono::high_resolution_clock::now();
+                  showTime = chrono::duration_cast<chrono::milliseconds>(end - start).count();
             }
             // DELETE DATA
             else if (choice == 5)
@@ -183,7 +221,13 @@ int main()
                   string id;
                   cout << "Enter ID to delete: ";
                   cin >> id;
+
+                  auto start = chrono::high_resolution_clock::now();
+
                   list.deleteByID(id);
+
+                  auto end = chrono::high_resolution_clock::now();
+                  deleteTime = chrono::duration_cast<chrono::milliseconds>(end - start).count();
             }
             // STATISTICS
             else if (choice == 6)
@@ -195,6 +239,13 @@ int main()
                   cout << "Total Data : " << total << endl;
                   cout << "Duplicate Data : " << duplicate << endl;
                   cout << "Unique Data : " << total - duplicate << endl;
+                  cout << endl;
+                  cout << "Execution Time Statistics (ms)" << endl;
+                  cout << "Insert Time : " << insertTime << endl;
+                  cout << "Search Time : " << searchTime << endl;
+                  cout << "Delete Time : " << deleteTime << endl;
+                  cout << "Show Time : " << showTime << endl;
+                  cout << "Duplicate Detection Time : " << detectTime << endl;
             }
             // EXIT
             else if (choice == 7)
