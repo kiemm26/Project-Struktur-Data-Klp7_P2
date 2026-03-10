@@ -7,3 +7,4 @@ main
 main.dSYM/
 .DS_Store
 dataset/dataset.csv
+dataset/ArsipDataset/
