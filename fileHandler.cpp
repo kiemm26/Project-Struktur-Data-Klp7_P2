@@ -20,7 +20,7 @@ vector<Data> readCSV(string filename)
       string line;
       getline(file, line); // skip header
 
-      int limit = 10000;
+      int limit = 1000;
       int count = 0;
       while (getline(file, line))
       {
@@ -50,7 +50,7 @@ vector<Data> readCSV(string filename)
 
             getline(ss, d.upload_date, ',');
             getline(ss, d.source, ',');
-            getline(ss, d.content);
+            getline(ss, d.content, ',');
 
             dataset.push_back(d);
             count++;

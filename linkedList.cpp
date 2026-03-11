@@ -7,6 +7,7 @@ using namespace std;
 LinkedList::LinkedList()
 {
       head = NULL;
+      duplicateMode = 0;
 }
 
 void LinkedList::insert(Data d)
@@ -100,6 +101,7 @@ void LinkedList::resetDuplicate()
 
 void LinkedList::detectDuplicateByContent()
 {
+      duplicateMode = 1;
       resetDuplicate();
       ofstream out("output/result.txt");
 
@@ -144,6 +146,7 @@ void LinkedList::detectDuplicateByContent()
 
 void LinkedList::detectDuplicateByMetadata()
 {
+      duplicateMode = 2;
       resetDuplicate();
 
       ofstream out("output/result.txt", ios::trunc);
@@ -187,6 +190,7 @@ void LinkedList::detectDuplicateByMetadata()
 
 void LinkedList::detectDuplicateByFullData()
 {
+      duplicateMode = 3;
       resetDuplicate();
 
       ofstream out("output/result.txt", ios::trunc);
@@ -231,26 +235,186 @@ void LinkedList::detectDuplicateByFullData()
 
 void LinkedList::printAll()
 {
+      vector<Node *> rows;
       Node *curr = head;
 
       while (curr != NULL)
       {
-            cout << curr->data.id << " | " << curr->data.name << " | " << curr->data.size << " | " << curr->data.upload_date << " | " << curr->data.source << " | " << curr->data.content << endl;
+            rows.push_back(curr);
             curr = curr->next;
+      }
+
+      if (rows.empty())
+      {
+            cout << "No data available." << endl;
+            return;
+      }
+
+      const int pageSize = 20;
+      int page = 0;
+      int total = rows.size();
+
+      while (true)
+      {
+            int start = page * pageSize;
+            if (start >= total)
+            {
+                  break;
+            }
+
+            int end = start + pageSize;
+            if (end > total)
+            {
+                  end = total;
+            }
+
+            cout << "\n+-----------------------------------------------------------------------------------------------------------------------------+" << endl;
+            cout << "| #  | ID         | Name                 | Size      | Upload Date  | Source               | Content                        |" << endl;
+            cout << "+-----------------------------------------------------------------------------------------------------------------------------+" << endl;
+
+            for (int i = start; i < end; i++)
+            {
+                  Data d = rows[i]->data;
+                  cout << "| " << left << setw(2) << (i + 1) << " | " << setw(10) << d.id << " | " << setw(20) << d.name << " | " << setw(9) << d.size << " | " << setw(12) << d.upload_date << " | " << setw(20) << d.source << " | " << setw(30) << d.content << "|" << endl;
+            }
+
+            cout << "+-----------------------------------------------------------------------------------------------------------------------------+" << endl;
+            cout << "Showing data " << (start + 1) << "-" << end << " of " << total << endl;
+
+            if (end >= total)
+            {
+                  break;
+            }
+
+            cout << "Next page? (y/n): ";
+            char next;
+            cin >> next;
+
+            if (next != 'y' && next != 'Y')
+            {
+                  break;
+            }
+            page++;
       }
 }
 
 void LinkedList::printDuplicates()
 {
-      Node *curr = head;
+      vector<vector<Node *>> groups;
+      vector<Node *> processed;
 
-      while (curr != NULL)
+      Node *curr1 = head;
+      while (curr1 != NULL)
       {
-            if (curr->isDuplicate)
+            if (curr1->isDuplicate)
             {
-                  cout << curr->data.id << " | " << curr->data.name << " | " << curr->data.size << " | " << curr->data.upload_date << " | " << curr->data.source << " | " << curr->data.content << endl;
+                  bool alreadyProcessed = false;
+                  for (Node *p : processed)
+                  {
+                        if (p == curr1)
+                        {
+                              alreadyProcessed = true;
+                              break;
+                        }
+                  }
+
+                  if (!alreadyProcessed)
+                  {
+                        vector<Node *> group;
+                        group.push_back(curr1);
+                        processed.push_back(curr1);
+
+                        Node *curr2 = curr1->next;
+                        while (curr2 != NULL)
+                        {
+                              bool match = false;
+                              if (curr2->isDuplicate)
+                              {
+                                    if (duplicateMode == 1)
+                                    {
+                                          match = (curr1->data.content == curr2->data.content);
+                                    }
+                                    else if (duplicateMode == 2)
+                                    {
+                                          match = (curr1->data.name == curr2->data.name && curr1->data.size == curr2->data.size);
+                                    }
+                                    else if (duplicateMode == 3)
+                                    {
+                                          match = (curr1->data.id == curr2->data.id && curr1->data.name == curr2->data.name && curr1->data.size == curr2->data.size && curr1->data.upload_date == curr2->data.upload_date && curr1->data.source == curr2->data.source && curr1->data.content == curr2->data.content);
+                                    }
+
+                                    if (match)
+                                    {
+                                          group.push_back(curr2);
+                                          processed.push_back(curr2);
+                                    }
+                              }
+                              curr2 = curr2->next;
+                        }
+
+                        if (group.size() > 1)
+                        {
+                              groups.push_back(group);
+                        }
+                  }
             }
-            curr = curr->next;
+            curr1 = curr1->next;
+      }
+
+      if (groups.empty())
+      {
+            cout << "No duplicate data found. Run duplicate detection first." << endl;
+            return;
+      }
+
+      const int pageSize = 20;
+      int shown = 0;
+      int groupNumber = 1;
+
+      for (size_t g = 0; g < groups.size(); g++)
+      {
+            cout << "\nDuplicate Group " << groupNumber++;
+            if (duplicateMode == 1)
+            {
+                  cout << " (Content)";
+            }
+            else if (duplicateMode == 2)
+            {
+                  cout << " (Metadata)";
+            }
+            else if (duplicateMode == 3)
+            {
+                  cout << " (Full Data)";
+            }
+            cout << endl;
+
+            cout << "+-----------------------------------------------------------------------------------------------------------------------------+" << endl;
+            cout << "| #  | ID         | Name                 | Size      | Upload Date  | Source               | Content                        |" << endl;
+            cout << "+-----------------------------------------------------------------------------------------------------------------------------+" << endl;
+
+            for (size_t i = 0; i < groups[g].size(); i++)
+            {
+                  Data d = groups[g][i]->data;
+                  cout << "| " << left << setw(2) << (shown + 1) << " | " << setw(10) << d.id << " | " << setw(20) << d.name << " | " << setw(9) << d.size << " | " << setw(12) << d.upload_date << " | " << setw(20) << d.source << " | " << setw(30) << d.content << "|" << endl;
+
+                  shown++;
+                  if (shown % pageSize == 0)
+                  {
+                        cout << "+-----------------------------------------------------------------------------------------------------------------------------+" << endl;
+                        cout << "Showing duplicate data " << shown << " so far. Next page? (y/n): ";
+                        char next;
+                        cin >> next;
+                        if (next != 'y' && next != 'Y')
+                        {
+                              return;
+                        }
+                        cout << "+-----------------------------------------------------------------------------------------------------------------------------+" << endl;
+                        cout << "| #  | ID         | Name                 | Size      | Upload Date  | Source               | Content                        |" << endl;
+                        cout << "+-----------------------------------------------------------------------------------------------------------------------------+" << endl;
+                  }
+            }
+
+            cout << "+-----------------------------------------------------------------------------------------------------------------------------+" << endl;
       }
 }
 

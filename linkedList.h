@@ -14,6 +14,7 @@ class LinkedList
 {
 private:
       Node *head;
+      int duplicateMode;
 
 public:
       LinkedList();
