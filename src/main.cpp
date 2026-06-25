@@ -142,6 +142,25 @@ long long measureUs(Func action)
 
 long long getMemoryUsageBytes()
 {
+      /*
+      // Alternatif untuk Windows:
+      // Tambahkan include berikut di bagian atas file:
+      // #include <windows.h>
+      // #include <psapi.h>
+      //
+      // PROCESS_MEMORY_COUNTERS_EX memoryInfo;
+      // if (GetProcessMemoryInfo(
+      //             GetCurrentProcess(),
+      //             reinterpret_cast<PROCESS_MEMORY_COUNTERS *>(&memoryInfo),
+      //             sizeof(memoryInfo)))
+      // {
+      //       return static_cast<long long>(memoryInfo.PeakWorkingSetSize);
+      // }
+      // return 0;
+      //
+      // Jika compile dengan MinGW, tambahkan flag: -lpsapi
+      */
+
       struct rusage usage;
       if (getrusage(RUSAGE_SELF, &usage) != 0)
             return 0;
